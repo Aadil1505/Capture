@@ -24,6 +24,9 @@ export default function explore() {
         </CardContent>
         <CardFooter>
           <Text>Card Footer</Text>
+          <Button onPress={() => router.push("/camera")}>
+            <Text>Go to camera</Text>
+          </Button>
         </CardFooter>
       </Card>
     </View>
@@ -33,6 +36,8 @@ export default function explore() {
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Text } from '~/components/ui/text';
+import { Button } from '@/components/ui/button';
+import { router } from 'expo-router';
 
 const GITHUB_AVATAR_URI = 'https://github.com/mrzachnugent.png';
 
