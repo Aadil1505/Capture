@@ -155,10 +155,34 @@ export const getCurrentEvent = async (userId: string) => {
       .eq('status', 'active')
       .single();
 
+      if (!data) {
+        return { message: 'No active event found', event: null };
+      }
+
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error)
+    return null;
+  }
+};
+
+export const hasCurrentEvent = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('event_participants')
+      .select(`
+        *,
+        event:events(*)
+      `)
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .single();
+
+    if (error) return false;
+    return true;
+  } catch (error) {
+    // console.error('Error:', error)
     return null;
   }
 };

@@ -1,12 +1,12 @@
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Text } from '@/components/ui/text';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { ScrollView, TouchableOpacity, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import { getCurrentEvent } from '@/lib/actions';
 import { useAuth } from '@/provider/AuthProvider';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface EventDetails {
  event: {
@@ -17,21 +17,28 @@ interface EventDetails {
 }
 
 const Home = () => {
- const [currentEvent, setCurrentEvent] = useState<EventDetails | null>(null);
- const { session } = useAuth();
+  const [currentEvent, setCurrentEvent] = useState<EventDetails | null>(null);
+  const { session } = useAuth();
 
- useEffect(() => {
-   const checkActiveEvent = async () => {
-     try {
-       const event = await getCurrentEvent(session?.user.id as string);
-       setCurrentEvent(event);
-     } catch (error) {
-       console.error('Error checking active event:', error);
-     }
-   };
+  useFocusEffect(
+    useCallback(() => {
+      const checkActiveEvent = async () => {
+        try {
+          const event = await getCurrentEvent(session?.user.id as string);
+          if (event.event){
+            setCurrentEvent(event);
+          }
+          else {
+            console.log("no event found")
+          }
+        } catch (error) {
+          console.error('Error checking active event:', error);
+        }
+      };
 
-   checkActiveEvent();
- }, [session?.user.id]);
+      checkActiveEvent();
+    }, [session?.user.id])
+  );
 
  return (
    <SafeAreaView className="flex-1 bg-background">
@@ -84,7 +91,7 @@ const Home = () => {
          )}
 
          {/* Create Event Card */}
-         <TouchableOpacity 
+         {!currentEvent && (<TouchableOpacity 
            onPress={() => router.push('/create-event')}
            className="shadow-sm mb-14"
            activeOpacity={0.7}
@@ -107,10 +114,10 @@ const Home = () => {
                />
              </View>
            </Card>
-         </TouchableOpacity>
+         </TouchableOpacity>)}
 
          {/* Join Event Card */}
-         <TouchableOpacity 
+         {!currentEvent && (<TouchableOpacity 
            onPress={() => router.push('/join-event')}
            className="shadow-sm mb-14"
            activeOpacity={0.7}
@@ -133,7 +140,7 @@ const Home = () => {
                />
              </View>
            </Card>
-         </TouchableOpacity>
+         </TouchableOpacity>)}
 
          {/* View Gallery Card */}
          <TouchableOpacity 

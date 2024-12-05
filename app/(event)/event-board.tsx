@@ -287,6 +287,16 @@ export default function EventBoard() {
             color="white" 
             />
         </TouchableOpacity>
+        <TouchableOpacity
+            onPress={() => router.push("/camera")}
+            className="p-2"
+        >
+            <IconSymbol 
+            size={24} 
+            name="camera" 
+            color="white" 
+            />
+        </TouchableOpacity>
         <Button
             onPress={handleUploadPhoto}
             disabled={uploadingPhoto}

@@ -68,7 +68,7 @@ export default function PictureView({ picture, setPicture }: PictureViewProps) {
           ) : (
             <IconButton
               onPress={handleUpload}
-              iosName={"square.and.arrow.up"}
+              iosName={"paperplane"}
               androidName="close"
             />
           )}

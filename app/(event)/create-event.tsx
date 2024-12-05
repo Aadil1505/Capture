@@ -105,7 +105,7 @@ export default function CreateEvent() {
               Cancel
             </Text>
           </Button>
-          <Button
+          {/* <Button
             onPress={() => router.push("/event-board")}
             variant="destructive"
             className="w-full"
@@ -113,7 +113,7 @@ export default function CreateEvent() {
             <Text className="text-secondary-foreground text-base">
               Cancel
             </Text>
-          </Button>
+          </Button> */}
         </View>
 
         {/* Information Section */}
