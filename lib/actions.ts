@@ -46,7 +46,6 @@ export const updateProfile = async (userId: string, updates: any) => {
 // Event Functions
 export const createEvent = async (name: string, userId: string): Promise<Event | null> => {
   try {
-    // Generate a random 6-character event code
     const event_code = Math.random().toString(36).substring(2, 8).toUpperCase();
 
     const { data, error } = await supabase

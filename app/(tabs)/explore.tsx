@@ -1,24 +1,50 @@
-import React from 'react';
-import { View } from 'react-native';
-import {
- Card,
- CardContent,
- CardHeader,
- CardTitle,
-} from '~/components/ui/card';
-import "../../global.css";
 import { Button } from '@/components/ui/button';
-import { router } from 'expo-router';
-import { Text } from '~/components/ui/text';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { getCurrentEvent } from '@/lib/actions';
+import { useAuth } from '@/provider/AuthProvider';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card';
+import { Text } from '~/components/ui/text';
+import "../../global.css";
 
 export default function Explore() {
+  const [currentEvent, setCurrentEvent] = useState<EventDetails | null>(null);
+  const { session } = useAuth();
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkActiveEvent = async () => {
+        try {
+          const event = await getCurrentEvent(session?.user.id as string);
+          if (event.event){
+            setCurrentEvent(event);
+          }
+          else {
+            console.log("no event found")
+          }
+        } catch (error) {
+          console.error('Error checking active event:', error);
+        }
+      };
+
+      checkActiveEvent();
+    }, [session?.user.id])
+  );
  return (
    <SafeAreaView className="flex-1 bg-background">
      <View className='flex-1 items-center justify-center p-4 space-y-4'>
        {/* Camera Launch Card */}
-       <Card className='w-full mb-4'>
+       {currentEvent ? (
+        <Card className='w-full mb-4'>
          <CardHeader>
            <CardTitle className="text-center text-secondary-foreground">
              Camera
@@ -36,6 +62,29 @@ export default function Explore() {
            </Button>
          </CardContent>
        </Card>
+       ): 
+       <Card className='w-full mb-4'>
+          <CardHeader>
+            <CardTitle className="text-center text-secondary-foreground">
+              Join an Event
+            </CardTitle>
+          </CardHeader>
+          <CardDescription className='text-center mb-4'>
+            <Text >Join an event to get access to the camera.</Text>
+          </CardDescription>
+          <CardContent className="space-y-4">
+            <Button
+              onPress={() => router.push('/join-event')}
+              className="w-full flex-row"
+            >
+              <IconSymbol size={20} name="camera" color="black" />
+              <Text className="text-primary-foreground ml-2">
+                Join now
+              </Text>
+            </Button>
+          </CardContent>
+        </Card>
+       }
 
        {/* Camera Info Card */}
        <Card className='w-full'>

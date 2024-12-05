@@ -1,24 +1,27 @@
 import * as React from "react";
-import { SafeAreaView, View } from "react-native";
-
+import { SafeAreaView, Text, View } from "react-native";
+import BottomRowTools from "@/components/BottomRowTools";
+import CameraTools from "@/components/CameraTools";
+import MainRowActions from "@/components/MainRowActions";
+import PictureView from "@/components/PictureView";
+import QRCodeButton from "@/components/QRCodeButton";
+import VideoViewComponent from "@/components/VideoView";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarcodeScanningResult,
   CameraMode,
   CameraView,
   FlashMode,
+  useCameraPermissions,
 } from "expo-camera";
-import BottomRowTools from "@/components/BottomRowTools";
-import MainRowActions from "@/components/MainRowActions";
-import PictureView from "@/components/PictureView";
+import * as WebBrowser from "expo-web-browser";
 import Animated, {
   FadeIn,
   FadeOut,
   LinearTransition,
 } from "react-native-reanimated";
-import CameraTools from "@/components/CameraTools";
-import * as WebBrowser from "expo-web-browser";
-import QRCodeButton from "@/components/QRCodeButton";
-import VideoViewComponent from "@/components/VideoView";
 
 export default function HomeScreen() {
   const cameraRef = React.useRef<CameraView>(null);
@@ -78,6 +81,46 @@ export default function HomeScreen() {
       }, 1000);
     }
   };
+
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-100 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center text-secondary-foreground">
+              Camera Permissions Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <View className="items-center">
+              <IconSymbol size={64} name="camera" color="gray" />
+              <Text className="text-base text-muted-foreground text-center mt-2">
+                To use the camera, we need your permission. Please grant access to continue.
+              </Text>
+            </View>
+            <Button
+              onPress={requestPermission}
+              className="w-full flex-row justify-center items-center"
+            >
+              <IconSymbol size={20} name="lock.open" color="black" />
+              <Text className="text-primary-foreground ml-2">
+                Grant Permission
+              </Text>
+            </Button>
+          </CardContent>
+        </Card>
+      </View>
+    );
+  }
+
 
   if (isBrowsing) return <></>;
   if (picture) return <PictureView picture={picture} setPicture={setPicture} />;
