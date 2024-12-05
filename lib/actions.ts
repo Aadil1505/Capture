@@ -70,41 +70,61 @@ export const createEvent = async (name: string, userId: string): Promise<Event |
 };
 
 export const joinEvent = async (eventCode: string, userId: string): Promise<boolean> => {
-  try {
-    // First, get the event details
-    const { data: event, error: eventError } = await supabase
-      .from('events')
-      .select('id')
-      .eq('event_code', eventCode)
-      .single();
-
-    if (eventError) throw eventError;
-    if (!event) throw new Error('Event not found');
-
-    // Set any existing active participation to inactive
-    await supabase
-      .from('event_participants')
-      .update({ status: 'inactive' })
-      .eq('user_id', userId)
-      .eq('status', 'active');
-
-    // Join the new event
-    const { error } = await supabase
-      .from('event_participants')
-      .insert({
-        event_id: event.id,
-        user_id: userId,
-        status: 'active'
-      });
-
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    Alert.alert('Error', 'Failed to join event');
-    console.error('Error:', error);
-    return false;
-  }
-};
+    try {
+      // First, get the event details
+      const { data: event, error: eventError } = await supabase
+        .from('events')
+        .select('id')
+        .eq('event_code', eventCode)
+        .single();
+  
+      if (eventError) throw eventError;
+      if (!event) throw new Error('Event not found');
+  
+      // Set any existing active participation to inactive
+      await supabase
+        .from('event_participants')
+        .update({ status: 'inactive' })
+        .eq('user_id', userId)
+        .eq('status', 'active');
+  
+      // Check if user was previously in this event
+      const { data: existingParticipant } = await supabase
+        .from('event_participants')
+        .select('*')
+        .eq('event_id', event.id)
+        .eq('user_id', userId)
+        .single();
+  
+      if (existingParticipant) {
+        // Update existing record
+        const { error } = await supabase
+          .from('event_participants')
+          .update({ status: 'active' })
+          .eq('event_id', event.id)
+          .eq('user_id', userId);
+  
+        if (error) throw error;
+      } else {
+        // Create new record
+        const { error } = await supabase
+          .from('event_participants')
+          .insert({
+            event_id: event.id,
+            user_id: userId,
+            status: 'active'
+          });
+  
+        if (error) throw error;
+      }
+  
+      return true;
+    } catch (error) {
+      Alert.alert('Error', 'Failed to join event');
+      console.error('Error:', error);
+      return false;
+    }
+  };
 
 export const leaveEvent = async (userId: string): Promise<boolean> => {
   try {

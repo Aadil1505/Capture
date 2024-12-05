@@ -68,10 +68,10 @@ export default function SignUp() {
     {/* TITLE */}
     <View className="flex-1 items-center justify-center px-4">
       <View className="flex-row items-center">
-        <Text className="text-primary-foreground text-7xl font-bold mr-2">
+        <Text className="text-secondary-foreground text-7xl font-bold mr-2">
           Capture
         </Text>
-        <IconSymbol size={60} name="camera.fill" color="black" />
+        <IconSymbol size={60} name="camera.fill" color="white" />
       </View>
      </View>
 
@@ -84,7 +84,7 @@ export default function SignUp() {
                 name="person" 
                 color="gray" 
                 />
-                <Label className='text-primary-foreground' nativeID='name'>First Name</Label>
+                <Label className='text-secondary-foreground' nativeID='name'>First Name</Label>
             </View>
             <Input
                 className='bg-primary text-primary-foreground'
@@ -104,7 +104,7 @@ export default function SignUp() {
               name="at" 
               color="gray" 
             />
-            <Label className='text-primary-foreground' nativeID='username'>Username</Label>
+            <Label className='text-secondary-foreground' nativeID='username'>Username</Label>
           </View>
           <Input
             className='bg-primary text-primary-foreground'
@@ -125,7 +125,7 @@ export default function SignUp() {
                 name="envelope" 
                 color="gray" 
                 />
-                <Label className='text-primary-foreground' nativeID='email'>Email</Label>
+                <Label className='text-secondary-foreground' nativeID='email'>Email</Label>
             </View>
             <Input
                 className='bg-primary text-primary-foreground'
@@ -146,7 +146,7 @@ export default function SignUp() {
                     name="lock" 
                     color="gray" 
                 />
-                <Label className='text-primary-foreground' nativeID='password'>Password</Label>
+                <Label className='text-secondary-foreground' nativeID='password'>Password</Label>
             </View>
             <Input
                 className='bg-primary text-primary-foreground'
@@ -178,10 +178,10 @@ export default function SignUp() {
           <Button
             onPress={() => router.replace("/sign-in")}
             disabled={loading}
-            variant={"default"}
+            variant={"ghost"}
             className="w-full"
           >
-            <Text className="text-primary-foreground text-center font-medium">
+            <Text className="text-secondary-foreground text-center font-medium">
               Already have an account? Signin
             </Text>
           </Button>

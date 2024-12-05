@@ -23,7 +23,7 @@ export default function App() {
   
 
   return (
-    <ScrollView className='bg-primary'>
+    <ScrollView className='bg-background'>
       <View>
         <SignIn/>
         {/* {session && session.user && <Text className='text-primary-foreground'>{session.user.id}</Text>} */}

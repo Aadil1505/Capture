@@ -34,7 +34,7 @@ export default function JoinEvent() {
           [
             {
               text: 'OK',
-              onPress: () => router.replace('/gallery')
+              onPress: () => router.replace('/event-board')
             }
           ]
         );

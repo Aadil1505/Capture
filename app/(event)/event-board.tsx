@@ -1,19 +1,20 @@
-import { View, ScrollView, Alert, TouchableOpacity, Image, useWindowDimensions, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useState, useEffect, useCallback } from 'react';
-import { router } from 'expo-router';
-import { useAuth } from '@/provider/AuthProvider';
-import { supabase } from '@/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import * as ImagePicker from 'expo-image-picker';
 import Loading from '@/components/Loading';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Text } from '@/components/ui/text';
 import { getCurrentEvent, getEventPhotos, getUserById, uploadImageToSupabase } from '@/lib/actions';
-import * as Sharing from 'expo-sharing';
-import * as MediaLibrary from 'expo-media-library';
+import { useAuth } from '@/provider/AuthProvider';
 import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import * as Sharing from 'expo-sharing';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, Image, RefreshControl, ScrollView, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { leaveEvent } from '@/lib/actions';
+import { router } from 'expo-router';
+
 
 interface Photo {
   id: number;
@@ -229,6 +230,34 @@ export default function EventBoard() {
     }
   };
 
+  const handleLeaveEvent = async () => {
+    Alert.alert(
+      "Leave Event",
+      "Are you sure you want to leave this event?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Leave",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const left = await leaveEvent(session?.user.id as string);
+              if (left) {
+                router.replace('/(tabs)');
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              Alert.alert('Error', 'Failed to leave event');
+            }
+          }
+        }
+      ]
+    );
+};
+
   useEffect(() => {
     loadEventData();
   }, []);
@@ -237,39 +266,46 @@ export default function EventBoard() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="px-4 py-2 border-b border-border">
-        <View className="flex-row justify-between items-center">
-          <View>
-            <Text className="text-xl font-bold text-secondary-foreground">
-              {eventDetails?.name}
-            </Text>
-            <Text className="text-sm text-muted-foreground">
-              Code: {eventDetails?.event_code}
-            </Text>
-          </View>
-          <View className="flex-row gap-2">
-            <TouchableOpacity
-              onPress={() => setIsGridView(!isGridView)}
-              className="p-2"
-            >
-              <IconSymbol 
-                size={24} 
-                name={isGridView ? "square.grid.3x3" : "list.bullet"} 
-                color="white" 
-              />
-            </TouchableOpacity>
-            <Button
-              onPress={handleUploadPhoto}
-              disabled={uploadingPhoto}
-            >
-              {/* <IconSymbol size={20} name="camera" color="white" /> */}
-              <Text className="text-primary-foreground">
-                {uploadingPhoto ? 'Uploading...' : 'Upload'}
-              </Text>
-            </Button>
-          </View>
+    <View className="px-4 py-2 border-b border-border">
+    <View className="flex-row justify-between items-center">
+        <View>
+        <Text className="text-xl font-bold text-secondary-foreground">
+            {eventDetails?.name}
+        </Text>
+        <Text className="text-sm text-muted-foreground">
+            Code: {eventDetails?.event_code}
+        </Text>
         </View>
-      </View>
+        <View className="flex-row gap-2">
+        <TouchableOpacity
+            onPress={() => setIsGridView(!isGridView)}
+            className="p-2"
+        >
+            <IconSymbol 
+            size={24} 
+            name={isGridView ? "square.grid.3x3" : "list.bullet"} 
+            color="white" 
+            />
+        </TouchableOpacity>
+        <Button
+            onPress={handleUploadPhoto}
+            disabled={uploadingPhoto}
+        >
+            <Text className="text-primary-foreground">
+            {uploadingPhoto ? 'Uploading...' : 'Upload'}
+            </Text>
+        </Button>
+        <Button
+            onPress={handleLeaveEvent}
+            variant="destructive"
+        >
+            <Text className="text-destructive-foreground">
+            Leave
+            </Text>
+        </Button>
+        </View>
+    </View>
+    </View>
 
       <ScrollView 
         className="flex-1" 
