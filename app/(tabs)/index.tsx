@@ -1,74 +1,126 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Text } from '@/components/ui/text';
+import { router } from 'expo-router';
+import { ScrollView, TouchableOpacity, View, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const Home = () => {
+ return (
+   <SafeAreaView className="flex-1 bg-background">
+     <ScrollView 
+       className="flex-1" 
+       contentContainerClassName="px-4 py-6"
+       showsVerticalScrollIndicator={false}
+     >
+       {/* Header */}
+       <View className="items-center mb-10">
+         <View className="flex-row items-center">
+           <Text className="text-secondary-foreground text-5xl font-bold mr-2">
+             Capture
+           </Text>
+           <IconSymbol size={48} name="camera.fill" color="white" />
+         </View>
+       </View>
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+       {/* Cards Container */}
+       <View className="space-y-6">
+         {/* Create Event Card */}
+         <TouchableOpacity 
+           onPress={() => router.push('/create-event')}
+           className="shadow-sm mb-14"
+           activeOpacity={0.7}
+         >
+           <Card className="bg-card">
+             <CardHeader className="pb-2">
+               <View className="flex-row items-center justify-between mb-2">
+                 <CardTitle className="text-2xl font-bold text-secondary-foreground">Create Event</CardTitle>
+                 <IconSymbol size={32} name="plus.circle.fill" color="white" />
+               </View>
+               <CardDescription className="text-base text-muted-foreground" aria-hidden>
+                 Create a new photo sharing event and invite others
+               </CardDescription>
+             </CardHeader>
+             <View className="w-full h-40 overflow-hidden">
+               <Image 
+                 source={{ uri: 'https://images.unsplash.com/photo-1493514789931-586cb221d7a7?q=80&w=2971&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }}
+                 className="w-full h-full"
+                 resizeMode="cover"
+               />
+             </View>
+             {/* <CardContent className="py-4">
+               <Text className="text-base text-secondary-foreground">
+                 Start a new event for collecting memories together
+               </Text>
+             </CardContent> */}
+           </Card>
+         </TouchableOpacity>
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+         {/* Join Event Card */}
+         <TouchableOpacity 
+           onPress={() => router.push('/join-event')}
+           className="shadow-sm mb-14"
+           activeOpacity={0.7}
+         >
+           <Card className="bg-card">
+             <CardHeader className="pb-2">
+               <View className="flex-row items-center justify-between mb-2">
+                 <CardTitle className="text-2xl font-bold text-secondary-foreground">Join Event</CardTitle>
+                 <IconSymbol size={32} name="person.2.fill" color="white" />
+               </View>
+               <CardDescription className="text-base text-muted-foreground">
+                 Join an existing photo sharing event
+               </CardDescription>
+             </CardHeader>
+             <View className="w-full h-40 overflow-hidden">
+               <Image 
+                 source={{ uri: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }}
+                 className="w-full h-full"
+                 resizeMode="cover"
+               />
+             </View>
+             {/* <CardContent className="py-4">
+               <Text className="text-base text-secondary-foreground">
+                 Enter an event code to join and share photos
+               </Text>
+             </CardContent> */}
+           </Card>
+         </TouchableOpacity>
+
+         {/* View Gallery Card */}
+         <TouchableOpacity 
+           onPress={() => router.push('/gallery')}
+           className="shadow-sm mb-14"
+           activeOpacity={0.7}
+         >
+           <Card className="bg-card">
+             <CardHeader className="pb-2">
+               <View className="flex-row items-center justify-between mb-2">
+                 <CardTitle className="text-2xl font-bold text-secondary-foreground">My Gallery</CardTitle>
+                 <IconSymbol size={32} name="photo.fill" color="white" />
+               </View>
+               <CardDescription className="text-base text-muted-foreground">
+                 View all your shared photos
+               </CardDescription>
+             </CardHeader>
+             <View className="w-full h-40 overflow-hidden">
+               <Image 
+                 source={{ uri: 'https://images.unsplash.com/photo-1510682657356-6ee07db8204b?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }}
+                 className="w-full h-full"
+                 resizeMode="cover"
+               />
+             </View>
+             {/* <CardContent className="py-4">
+               <Text className="text-base text-secondary-foreground">
+                 Access your complete photo collection
+               </Text>
+             </CardContent> */}
+           </Card>
+         </TouchableOpacity>
+       </View>
+     </ScrollView>
+   </SafeAreaView>
+ );
+};
+
+export default Home;

@@ -11,23 +11,56 @@ import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function SignUp() {
+  const [firstName, setFirstName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function signUpWithEmail() {
-    setLoading(true)
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-    })
+    try {
+      setLoading(true)
 
-    if (error) Alert.alert(error.message)
-    if (!session) Alert.alert('Please check your inbox for email verification!')
-    setLoading(false)
+      // Basic validation
+      if (!username.trim()) {
+        Alert.alert('Error', 'Username is required')
+        return
+      }
+
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (error) throw error
+
+      if (session?.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: session.user.id,
+            email: session.user.email,
+            name: firstName,
+            username: username.toLowerCase(), // Store username in lowercase for consistency
+            updated_at: new Date().toISOString()
+          })
+
+        if (profileError) {
+          console.error('Profile creation failed:', profileError)
+          Alert.alert('Error creating profile', 'Username might already be taken')
+          return
+        }
+      }
+
+      Alert.alert('Success!')
+    } catch (error: any) {
+      Alert.alert('Error', error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -43,6 +76,47 @@ export default function SignUp() {
      </View>
 
       <View className="mt-5 space-y-4">
+        {/* First Name */}
+        <View className='mb-2'>
+            <View className='flex-row gap-2'>
+                <IconSymbol 
+                size={20} 
+                name="person" 
+                color="gray" 
+                />
+                <Label className='text-primary-foreground' nativeID='name'>First Name</Label>
+            </View>
+            <Input
+                className='bg-primary text-primary-foreground'
+                placeholder="Batman"
+                onChangeText={setFirstName}
+                value={firstName}
+                aria-labelledby='inputLabel'
+                aria-errormessage='inputError'
+            />
+        </View>
+
+        {/* Username */}
+        <View className='mb-2'>
+          <View className='flex-row gap-2'>
+            <IconSymbol 
+              size={20} 
+              name="at" 
+              color="gray" 
+            />
+            <Label className='text-primary-foreground' nativeID='username'>Username</Label>
+          </View>
+          <Input
+            className='bg-primary text-primary-foreground'
+            placeholder="batman123"
+            onChangeText={setUsername}
+            value={username}
+            autoCapitalize="none"
+            aria-labelledby='inputLabel'
+            aria-errormessage='inputError'
+          />
+        </View>
+
         {/* Email */}
         <View className='mb-2'>
             <View className='flex-row gap-2'>
@@ -75,7 +149,7 @@ export default function SignUp() {
                 <Label className='text-primary-foreground' nativeID='password'>Password</Label>
             </View>
             <Input
-                className='bg-primary'
+                className='bg-primary text-primary-foreground'
                 placeholder="Password"
                 onChangeText={setPassword}
                 value={password}

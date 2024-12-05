@@ -8,6 +8,10 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
+import { useEffect } from 'react';
+import { useRouter, useSegments } from 'expo-router'
+import { AuthProvider, useAuth } from '../provider/AuthProvider'
+
 
 
 const LIGHT_THEME: Theme = {
@@ -106,7 +110,33 @@ if (!isColorSchemeLoaded) {
 return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      <Stack screenOptions={{headerShown: false}}/>
+      <AuthProvider>
+        <InitialLayout />
+      </AuthProvider>
     </ThemeProvider>
 );
+}
+
+
+const InitialLayout = () => {
+  const { session, initialized } = useAuth()
+  const segments = useSegments()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!initialized) return
+
+    // Check if the path/url is in the (auth) group
+    const inAuthGroup = segments[0] === '(auth)'
+
+    if (session && !inAuthGroup) {
+      // Redirect authenticated users to the list page
+      router.replace('/explore')
+    } else if (!session) {
+      // Redirect unauthenticated users to the login page
+      router.replace('/sign-in')
+    }
+  }, [session, initialized])
+
+  return <Stack screenOptions={{headerShown: false}}/>
 }

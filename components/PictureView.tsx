@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Alert, View } from "react-native";
+import { Alert, View, ActivityIndicator } from "react-native";
 import IconButton from "./IconButton";
 import { shareAsync } from "expo-sharing";
 import { saveToLibraryAsync } from "expo-media-library";
@@ -8,12 +8,32 @@ import Animated, {
   FadeOut,
   LinearTransition,
 } from "react-native-reanimated";
+import { uploadImageToSupabase } from "@/lib/actions";
+import { useAuth } from "@/provider/AuthProvider";
+import { useState } from "react";
 
 interface PictureViewProps {
   picture: string;
   setPicture: React.Dispatch<React.SetStateAction<string>>;
 }
+
 export default function PictureView({ picture, setPicture }: PictureViewProps) {
+  const { session } = useAuth();
+  const userId = session?.user.id;
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleUpload = async () => {
+    try {
+      setIsUploading(true);
+      await uploadImageToSupabase(picture, userId as string);
+      Alert.alert("Picture uploaded successfully");
+    } catch (error) {
+      Alert.alert("Error uploading picture");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <Animated.View
       layout={LinearTransition}
@@ -32,31 +52,27 @@ export default function PictureView({ picture, setPicture }: PictureViewProps) {
         <IconButton
           onPress={async () => {
             saveToLibraryAsync(picture);
-            Alert.alert("✅ Picture saved!");
+            Alert.alert("Saved picture successfully");
           }}
           iosName={"arrow.down"}
           androidName="close"
         />
-        {/* <IconButton
-          onPress={() => setPicture("")}
-          iosName={"square.dashed"}
-          androidName="close"
-        /> */}
-        {/* <IconButton
-          onPress={() => setPicture("")}
-          iosName={"circle.dashed"}
-          androidName="close"
-        /> */}
-        {/* <IconButton
-          onPress={() => setPicture("")}
-          iosName={"triangle"}
-          androidName="close"
-        /> */}
         <IconButton
           onPress={async () => await shareAsync(picture)}
           iosName={"square.and.arrow.up"}
           androidName="close"
         />
+        <View>
+          {isUploading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <IconButton
+              onPress={handleUpload}
+              iosName={"square.and.arrow.up"}
+              androidName="close"
+            />
+          )}
+        </View>
       </View>
 
       <View

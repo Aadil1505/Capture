@@ -22,8 +22,9 @@ export default function SignIn() {
       password,
     })
 
-    if (error) Alert.alert(error.message)
+    // if (error) Alert.alert(error.message)
     // if (error) return (error.message)
+    if (error) throw error
 
     setLoading(false)
     if (!error) router.push("/profile")
